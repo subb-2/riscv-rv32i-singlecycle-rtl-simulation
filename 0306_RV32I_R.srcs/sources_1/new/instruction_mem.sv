@@ -9,11 +9,12 @@ module instruction_mem (
     logic [31:0] rom [0:31];
 
     initial begin
-        rom[0] = 32'h005201b3;
+        rom[0] = 32'h004182b3; //ADD X5, X3, X4 
         rom[1] = 32'h005201b3;
     end
     //나머지는 초기화 안했으니 X로 채워짐
 
+    //read addr 를 word addr로 변경 
     assign instr_data = rom [instr_addr[31:2]]; //우 shift 2 
 
 endmodule
