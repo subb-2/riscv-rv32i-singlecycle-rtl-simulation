@@ -120,6 +120,8 @@ module register_file (
         for (int i = 1; i < 32; i++) begin
             register_file[i] = i;
         end
+        register_file[13] = 32'h00008185;
+        register_file[14] = 32'h00008a8b;
     end
 `endif
 
