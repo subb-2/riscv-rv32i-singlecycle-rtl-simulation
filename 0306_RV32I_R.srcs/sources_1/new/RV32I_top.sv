@@ -5,7 +5,7 @@ module RV32I_top (
     input rst
 );
     logic dwe;
-    logic [31:0] instr_addr, instr_data, dwaddr, dwdata, drdata;
+    logic [31:0] instr_addr, instr_data, daddr, dwdata, drdata;
 
     instruction_mem U_INSTRUCTION_MEM (.*);
 

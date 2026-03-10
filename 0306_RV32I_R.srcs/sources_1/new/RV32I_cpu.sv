@@ -5,13 +5,14 @@ module RV32I_cpu (
     input         clk,
     input         rst,
     input  [31:0] instr_data,
-    output [31:0] instr_addr,
+    input  [31:0] drdata,
+    output [31:0] instr_addr, 
     output        dwe,
-    output [31:0] dwaddr,
+    output [31:0] daddr,
     output [31:0] dwdata
 );
 
-    logic rf_we, alu_src;
+    logic rf_we, alu_src, rfwd_src;
     logic [31:0] alu_result, alu_pc_out;
     logic [3:0] alu_control;
 
@@ -22,6 +23,7 @@ module RV32I_cpu (
         .rf_we      (rf_we),
         .alu_src    (alu_src),
         .alu_control(alu_control),
+        .rfwd_src   (rfwd_src),
         .dwe        (dwe)
     );
 
@@ -39,6 +41,7 @@ module control_unit (
     output logic       rf_we,
     output logic       alu_src,
     output logic [3:0] alu_control,
+    output logic       rfwd_src,
     output logic       dwe
 );
 
@@ -46,19 +49,29 @@ module control_unit (
         rf_we       = 1'b0;
         alu_src     = 1'b0;
         alu_control = 4'b0000;
+        rfwd_src    = 1'b0;
         dwe         = 1'b0;
         case (opcode)
             `R_TYPE: begin // R-type, to write register file, alu_control == {funct7[5], funct3}
                 rf_we       = 1'b1;
                 alu_src     = 1'b0;
                 alu_control = {funct7[5], funct3};
+                rfwd_src    = 1'b0;
                 dwe         = 1'b0;
             end
             `S_TYPE: begin
                 rf_we       = 1'b0;
                 alu_src     = 1'b1;
                 alu_control = 4'b0000;
+                rfwd_src    = 1'b0;
                 dwe         = 1'b1;
+            end
+            `IL_TYPE: begin
+                rf_we       = 1'b1;
+                alu_src     = 1'b1;
+                alu_control = 4'b0000;
+                rfwd_src    = 1'b1;
+                dwe         = 1'b0;
             end
         endcase
     end
