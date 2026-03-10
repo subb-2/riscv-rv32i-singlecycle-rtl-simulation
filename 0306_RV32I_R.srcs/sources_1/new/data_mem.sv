@@ -9,21 +9,30 @@ module data_mem (
     output [31:0] drdata
 );
 
-    logic [7:0] dmem[0:31];
+//    logic [7:0] dmem[0:31];
+//
+//    always_ff @(posedge clk) begin
+//
+//        if (dwe) begin
+//            //store word 일 때만, 이렇게? 
+//            dmem[dwaddr+0] <= dwdata[7:0];
+//            dmem[dwaddr+1] <= dwdata[15:8];
+//            dmem[dwaddr+2] <= dwdata[23:16];
+//            dmem[dwaddr+3] <= dwdata[31:24];
+//        end
+//    end
+//
+//    assign drdata = {
+//        dmem[dwaddr], dmem[dwaddr+1], dmem[dwaddr+2], dmem[dwaddr+3]
+//    };
 
-    always_ff @(posedge clk) begin
-
+    logic [31:0] dmem[0:31]; //word로 word address
+    always_ff @( posedge clk ) begin
         if (dwe) begin
-            //store word 일 때만, 이렇게? 
-            dmem[dwaddr+0] <= dwdata[7:0];
-            dmem[dwaddr+1] <= dwdata[15:8];
-            dmem[dwaddr+2] <= dwdata[23:16];
-            dmem[dwaddr+3] <= dwdata[31:24];
+            dmem[dwaddr] <= dwdata;
         end
     end
 
-    assign drdata = {
-        dmem[dwaddr], dmem[dwaddr+1], dmem[dwaddr+2], dmem[dwaddr+3]
-    };
+    assign drdata = dmem[dwaddr[31:2]]; //data가 byte로 오니까 밑에 2bit 짜르기 
 
 endmodule
