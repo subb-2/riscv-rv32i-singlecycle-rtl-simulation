@@ -4,7 +4,7 @@ module RV32I_top (
     input clk,
     input rst
 );
-    logic       dwe;
+    logic       dwe, branch;
     logic [2:0] o_funct3;
     logic [31:0] instr_addr, instr_data, daddr, dwdata, drdata;
 

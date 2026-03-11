@@ -10,19 +10,24 @@ module rv32i_datapath (
     input  [ 3:0] alu_control,
     input  [31:0] instr_data,
     input  [31:0] drdata,
+    input         branch,
     output [31:0] instr_addr,
-    output [31:0] daddr, 
+    output [31:0] daddr,
     output [31:0] dwdata
 );
 
     logic [31:0] rd1, rd2, alu_result, imm_data, alurs2_data, rfwb_data;
-
+    logic b_taken;
+    
     assign daddr  = alu_result;
     assign dwdata = rd2;
 
     program_counter U_PC (
-        .clk            (clk),
-        .rst            (rst),
+        .clk(clk),
+        .rst(rst),
+        .imm_data(imm_data),
+        .b_taken(b_taken), //from alu comparator
+        .branch(branch), //froma control unit for B-type
         .program_counter(instr_addr)
     );
 
@@ -54,7 +59,8 @@ module rv32i_datapath (
         .rd1        (rd1),
         .rd2        (alurs2_data),
         .alu_control(alu_control),
-        .alu_result (alu_result)
+        .alu_result (alu_result),
+        .b_taken    (b_taken)
     );
 
     //to register file
@@ -92,9 +98,19 @@ module imm_extender (
                     {20{instr_data[31]}}, instr_data[31:25], instr_data[11:7]
                 };
             end
-            `I_TYPE, `IL_TYPE: begin //load 
+            `I_TYPE, `IL_TYPE: begin  //load 
                 imm_data = {{20{instr_data[31]}}, instr_data[31:20]};
-            end 
+            end
+            `B_TYPE: begin  //Branch
+                imm_data = {
+                    {19{instr_data[31]}},
+                    instr_data[31],
+                    instr_data[7], // imm bit 11
+                    instr_data[30:25], // imm bit 10:5
+                    instr_data[11:8], //imm bit 4:1
+                    1'b0
+                };
+            end
         endcase
     end
 
@@ -120,8 +136,14 @@ module register_file (
         for (int i = 1; i < 32; i++) begin
             register_file[i] = i;
         end
-        register_file[13] = 32'h00008185;
-        register_file[14] = 32'h00008a8b;
+        //register_file[12] = 32'h3;
+        //register_file[13] = 32'h3;
+        //register_file[14] = 32'h33;
+        //register_file[14] = 32'h33;
+        //register_file[14] = 32'h33;
+        //register_file[14] = 32'h33;
+        //register_file[14] = 32'h33; 
+        //register_file[14] = 32'h33;
     end
 `endif
 
@@ -145,7 +167,8 @@ module alu (
     input        [31:0] rd1,          //RS1
     input        [31:0] rd2,          //RS2
     input        [ 3:0] alu_control,  //function7[5], funct3 : 4bit 
-    output logic [31:0] alu_result
+    output logic [31:0] alu_result,
+    output logic        b_taken
 );
 
     always_comb begin
@@ -167,20 +190,67 @@ module alu (
         endcase
     end
 
+    always_comb begin
+        b_taken = 0;
+        case (alu_control)
+            //B-type comparator
+            `BEQ: begin
+                if (rd1 == rd2) b_taken = 1;
+                else b_taken = 0;
+            end
+            `BNE: begin
+                if (rd1 != rd2) b_taken = 1;
+                else b_taken = 0;
+            end
+            `BLT: begin
+                if ($signed(rd1) < $signed(rd2)) b_taken = 1;
+                else b_taken = 0;
+            end
+            `BGE: begin
+                if ($signed(rd1) >= $signed(rd2)) b_taken = 1;
+                else b_taken = 0;
+            end
+            `BLTU: begin
+                if (rd1 < rd2) b_taken = 1;
+                else b_taken = 0;
+            end
+            `BGEU: begin
+                if (rd1 >= rd2) b_taken = 1;
+                else b_taken = 0;
+            end
+        endcase
+    end
+
 endmodule
 
 module program_counter (
     input         clk,
     input         rst,
+    input  [31:0] imm_data,
+    input         b_taken,
+    input         branch,
     output [31:0] program_counter
 );
 
-    logic [31:0] pc_alu_out;
+    logic [31:0] pc_alu_out, pc_alu_4, pc_alu_imm;
 
-    pc_alu U_PC_ALU_4 (
+    pc_alu U_PC_4 (
         .a(32'd4),
         .b(program_counter),
-        .pc_alu_out(pc_alu_out)
+        .pc_alu_out(pc_alu_4)
+    );
+
+    pc_alu U_PC_IMM (
+        .a(imm_data),
+        .b(program_counter),
+        .pc_alu_out(pc_alu_imm)
+    );
+
+    mux_2x1 U_PC_NEXT_MUX (
+        .in0    (pc_alu_4),     //sel 0
+        .in1    (pc_alu_imm),   //sel 1
+        .mux_sel(b_taken & branch),
+        .out_mux(pc_alu_out)
     );
 
     register U_PC_REG (

@@ -13,7 +13,7 @@ module RV32I_cpu (
     output [31:0] dwdata
 );
 
-    logic rf_we, alu_src, rfwd_src;
+    logic rf_we, alu_src, rfwd_src, branch;
     logic [31:0] alu_result, alu_pc_out;
     logic [3:0] alu_control;
 
@@ -26,6 +26,7 @@ module RV32I_cpu (
         .alu_control(alu_control),
         .rfwd_src   (rfwd_src),
         .o_funct3   (o_funct3),
+        .branch     (branch),
         .dwe        (dwe)
     );
 
@@ -45,6 +46,7 @@ module control_unit (
     output logic [3:0] alu_control,
     output logic       rfwd_src,
     output logic [2:0] o_funct3,
+    output logic       branch,
     output logic       dwe
 );
 
@@ -54,6 +56,7 @@ module control_unit (
         alu_control = 4'b0000;
         rfwd_src    = 1'b0;
         o_funct3    = 3'b000;
+        branch      = 1'b0;
         dwe         = 1'b0;
         case (opcode)
             `R_TYPE: begin // R-type, to write register file, alu_control == {funct7[5], funct3}
@@ -62,6 +65,16 @@ module control_unit (
                 alu_control = {funct7[5], funct3};
                 rfwd_src    = 1'b0;
                 o_funct3    = 3'b000;
+                branch      = 1'b0;
+                dwe         = 1'b0;
+            end
+            `B_TYPE: begin // R-type, to write register file, alu_control == {funct7[5], funct3}
+                rf_we       = 1'b0;
+                alu_src     = 1'b0;
+                alu_control = {1'b0, funct3};
+                rfwd_src    = 1'b0;
+                o_funct3    = 3'b000;
+                branch      = 1'b1;
                 dwe         = 1'b0;
             end
             `S_TYPE: begin
@@ -70,6 +83,7 @@ module control_unit (
                 alu_control = 4'b0000;
                 rfwd_src    = 1'b0;
                 o_funct3    = funct3;
+                branch      = 1'b0;
                 dwe         = 1'b1;
             end
             `IL_TYPE: begin
@@ -78,19 +92,21 @@ module control_unit (
                 alu_control = 4'b0000;
                 rfwd_src    = 1'b1;
                 o_funct3    = funct3;
+                branch      = 1'b0;
                 dwe         = 1'b0;
             end
-            `I_TYPE: begin 
-                rf_we       = 1'b1;
-                alu_src     = 1'b1;
+            `I_TYPE: begin
+                rf_we   = 1'b1;
+                alu_src = 1'b1;
                 if (funct3 == 3'b101) begin
                     alu_control = {funct7[5], funct3};
                 end else begin
                     alu_control = {1'b0, funct3};
                 end
-                rfwd_src    = 1'b0;
-                o_funct3    = funct3;
-                dwe         = 1'b0;
+                rfwd_src = 1'b0;
+                o_funct3 = funct3;
+                branch   = 1'b0;
+                dwe      = 1'b0;
             end
         endcase
     end

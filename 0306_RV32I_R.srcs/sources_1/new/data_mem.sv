@@ -61,11 +61,11 @@ module data_mem (
                 end
                 //LBU
                 3'b100: begin
-                    drdata = {{24{0}}, dmem[daddr+0]};
+                    drdata = {{24{1'b0}}, dmem[daddr+0]};
                 end
                 //LHU
-                3'b101: begin
-                    drdata = {{16{0}}, dmem[daddr+1], dmem[daddr+0]};
+                3'b101: begin 
+                    drdata = {{16{1'b0}}, dmem[daddr+1], dmem[daddr+0]};
                 end
             endcase
         end
