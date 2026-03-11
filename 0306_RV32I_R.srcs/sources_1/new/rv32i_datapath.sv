@@ -136,14 +136,12 @@ module register_file (
         for (int i = 1; i < 32; i++) begin
             register_file[i] = i;
         end
-        //register_file[12] = 32'h3;
-        //register_file[13] = 32'h3;
-        //register_file[14] = 32'h33;
-        //register_file[14] = 32'h33;
-        //register_file[14] = 32'h33;
-        //register_file[14] = 32'h33;
-        //register_file[14] = 32'h33; 
-        //register_file[14] = 32'h33;
+        register_file[12] = 32'h00000003;
+        register_file[13] = 32'h00000021; 
+        //register_file[4] = 32'h00000004;
+        register_file[15] = 32'h80000000;
+        register_file[16] = 32'h00000001;
+
     end
 `endif
 
