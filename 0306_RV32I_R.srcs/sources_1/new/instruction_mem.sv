@@ -9,23 +9,27 @@ module instruction_mem (
     logic [31:0] rom [0:31];
 
     initial begin
-        //R-type HW
-        rom[0] = 32'h004182b3;
-        rom[1] = 32'h402302b3;
-        rom[2] = 32'h008193b3;
-        rom[3] = 32'h0081a2b3;
-        rom[4] = 32'h0081b2b3;
-        rom[5] = 32'h00954433;
-        rom[6] = 32'h0081d3b3;
-        rom[7] = 32'h4042d333;
-        rom[8] = 32'h004161b3;
-        rom[9] = 32'h005273b3;
+        $readmemh("riscv_ru32i_rom_data.mem",rom); 
+        //hex 값이니까 readmemh로 읽어야 함
+        //저장할 위치도 알려줘야 함 : rom 
 
-        rom[10] = 32'h00d61733;
-        rom[11] = 32'h0107a8b3;
-        rom[12] = 32'h0117b833;
-        rom[13] = 32'h0047d933;
-        rom[14] = 32'h4047d9b3;
+        //R-type HW
+        //rom[0] = 32'h004182b3;
+        //rom[1] = 32'h402302b3;
+        //rom[2] = 32'h008193b3;
+        //rom[3] = 32'h0081a2b3;
+        //rom[4] = 32'h0081b2b3;
+        //rom[5] = 32'h00954433;
+        //rom[6] = 32'h0081d3b3;
+        //rom[7] = 32'h4042d333;
+        //rom[8] = 32'h004161b3;
+        //rom[9] = 32'h005273b3;
+//
+        //rom[10] = 32'h00d61733;
+        //rom[11] = 32'h0107a8b3;
+        //rom[12] = 32'h0117b833;
+        //rom[13] = 32'h0047d933;
+        //rom[14] = 32'h4047d9b3;
 
 
         //rom[0] = 32'h004182b3; //ADD X5, X3, X4  
@@ -43,7 +47,7 @@ module instruction_mem (
         //0311 class
         //rom[0] = 32'h004182b3; //ADD X5, X3, X4  
         //rom[1] = 32'h00812123; //sw x2, 2(x8), sw x2, x8, 2 
-        //rom[2] = 32'h00212383; //LW x7, x2, 2
+        //rom[2] = 32'h00212383; //LW x7, x2, 2 
         //rom[3] = 32'h00438413; //ADDi x8, x7, 4 
         ////rom[4] = 32'h00838463; //BEQ x7, x8, 8
         //rom[4] = 32'h00840463; //BEQ x8, x8, 8

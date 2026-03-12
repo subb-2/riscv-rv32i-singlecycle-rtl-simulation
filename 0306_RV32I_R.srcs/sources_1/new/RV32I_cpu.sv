@@ -130,7 +130,7 @@ module control_unit (
                 alu_src     = 1'b0;
                 alu_control = 4'b0000;
                 rfwd_src    = 3'd2;
-                o_funct3    = funct3;
+                o_funct3    = 3'b000;
                 branch      = 1'b0;
                 jal         = 1'b0;
                 jalr        = 1'b0;
@@ -141,13 +141,13 @@ module control_unit (
                 alu_src     = 1'b0;
                 alu_control = 4'b0000;
                 rfwd_src    = 3'd3;
-                o_funct3    = funct3;
+                o_funct3    = 3'b000;
                 branch      = 1'b0;
                 jal         = 1'b0;
                 jalr        = 1'b0;
                 dwe         = 1'b0;
             end
-            `JAL_TYPE: begin
+            `J_TYPE, `JL_TYPE: begin
                 rf_we       = 1'b1;
                 alu_src     = 1'b0;
                 alu_control = 4'b0000;
@@ -155,18 +155,8 @@ module control_unit (
                 o_funct3    = funct3;
                 branch      = 1'b0;
                 jal         = 1'b1;
-                jalr        = 1'b0;
-                dwe         = 1'b0;
-            end
-            `JALR_TYPE: begin
-                rf_we       = 1'b1;
-                alu_src     = 1'b0;
-                alu_control = 4'b0000;
-                rfwd_src    = 3'd4;
-                o_funct3    = funct3;
-                branch      = 1'b0;
-                jal         = 1'b0;
-                jalr        = 1'b1;
+                if(opcode == `JL_TYPE) jalr = 1'b1;
+                else jalr = 1'b0;
                 dwe         = 1'b0;
             end
         endcase

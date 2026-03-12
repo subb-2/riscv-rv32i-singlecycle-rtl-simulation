@@ -33,16 +33,16 @@ module rv32i_datapath (
     assign dwdata = rd2;
 
     program_counter U_PC (
-        .clk(clk),
-        .rst(rst),
-        .rd1(rd1),
-        .imm_data(imm_data),
-        .b_taken(b_taken),  //from alu comparator
-        .branch(branch),  //froma control unit for B-type
-        .jal(jal),
-        .jalr(jalr),
-        .pc_alu_imm(pc_alu_imm),
-        .pc_alu_4(pc_alu_4),
+        .clk            (clk),
+        .rst            (rst),
+        .rd1            (rd1),
+        .imm_data       (imm_data),
+        .b_taken        (b_taken),     //from alu comparator
+        .branch         (branch),      //froma control unit for B-type
+        .jal            (jal),
+        .jalr           (jalr),
+        .pc_alu_imm     (pc_alu_imm),
+        .pc_alu_4       (pc_alu_4),
         .program_counter(instr_addr)
     );
 
@@ -80,11 +80,11 @@ module rv32i_datapath (
 
     //to register file
     mux_5x1 U_WB_MUX (
-        .in0    (alu_result),  //sel 0
-        .in1    (drdata),      //sel 1
-        .in2    (imm_data),
-        .in3    (pc_alu_imm),
-        .in4    (pc_alu_4),
+        .in0    (alu_result),  // alu result
+        .in1    (drdata),      //from data memory
+        .in2    (imm_data),    //from imm extend, for LUI
+        .in3    (pc_alu_imm),  //from pc + imm extend, for AUIPC
+        .in4    (pc_alu_4),    //from PC + 4, for JAL/JALR 
         .mux_sel(rfwd_src),
         .out_mux(rfwb_data)
     );
@@ -114,7 +114,7 @@ module mux_5x1 (
 );
 
     always_comb begin
-        out_mux = 0;
+        //full case 이므로 초기화 안해도 됨 
         case (mux_sel)
             3'd0: begin
                 out_mux = in0;
@@ -131,6 +131,7 @@ module mux_5x1 (
             3'd4: begin
                 out_mux = in4;
             end
+            default: out_mux = 32'hxxxx;  //버그 찾기 위함 
         endcase
     end
 
@@ -165,7 +166,7 @@ module imm_extender (
             `LUI_TYPE, `AUIPC_TYPE: begin
                 imm_data = {instr_data[31:12], 12'b0};
             end
-            `JAL_TYPE: begin
+            `J_TYPE: begin
                 imm_data = {
                     {11{instr_data[31]}},
                     instr_data[31],
@@ -175,7 +176,7 @@ module imm_extender (
                     1'b0
                 };
             end
-            `JALR_TYPE: begin
+            `JL_TYPE: begin
                 imm_data = {{20{instr_data[31]}}, instr_data[31:20]};
             end
         endcase
@@ -203,11 +204,11 @@ module register_file (
         for (int i = 1; i < 32; i++) begin
             register_file[i] = i;
         end
-        register_file[12] = 32'h00000003;
-        register_file[13] = 32'h00000021;
+        //register_file[12] = 32'h00000003;
+        //register_file[13] = 32'h00000021;
         //register_file[4] = 32'h00000004;
-        register_file[15] = 32'h80000000;
-        register_file[16] = 32'h00000001;
+        //register_file[15] = 32'h80000000;
+        //register_file[16] = 32'h00000001;
 
     end
 `endif
@@ -227,7 +228,7 @@ module register_file (
     assign RD2 = (RA2 != 0) ? register_file[RA2] : 0;
 
 endmodule
- 
+
 module alu (
     input        [31:0] rd1,          //RS1
     input        [31:0] rd2,          //RS2
@@ -297,18 +298,19 @@ module program_counter (
     input         branch,
     input         jal,
     input         jalr,
-    output [31:0] pc_alu_imm,
+    output [31:0] pc_alu_imm,      //pc_jump
     output [31:0] pc_alu_4,
     output [31:0] program_counter
 );
 
-    logic [31:0] pc_alu_out;
+    logic [31:0] pc_alu_out, pc_rs1_mux_out;
     logic pc_next_sel;
 
     assign pc_next_sel = jal | (b_taken & branch);
 
+    //jalr mux 
     mux_2x1 U_PC_RS1_MUX (
-        .in0    (program_counter),  //sel 0
+        .in0    (program_counter),  //sel 0 //pc_alu_4 이거라고?
         .in1    (rd1),              //sel 1
         .mux_sel(jalr),
         .out_mux(pc_rs1_mux_out)

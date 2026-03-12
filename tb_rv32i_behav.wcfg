@@ -13,11 +13,11 @@
    <zoom_setting>
       <ZoomStartTime time="0fs"></ZoomStartTime>
       <ZoomEndTime time="220001fs"></ZoomEndTime>
-      <Cursor1Time time="165000fs"></Cursor1Time>
+      <Cursor1Time time="45000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="198"></NameColumnWidth>
-      <ValueColumnWidth column_width="96"></ValueColumnWidth>
+      <ValueColumnWidth column_width="92"></ValueColumnWidth>
    </column_width_setting>
    <WVObjectSize size="7" />
    <wvobject fp_name="/tb_rv32i/clk" type="logic">
@@ -66,9 +66,9 @@
          <obj_property name="ObjectShortName">alu_control[3:0]</obj_property>
          <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_CONTROL_UNIT/rfwd_src" type="logic">
-         <obj_property name="ElementShortName">rfwd_src</obj_property>
-         <obj_property name="ObjectShortName">rfwd_src</obj_property>
+      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_CONTROL_UNIT/rfwd_src" type="array">
+         <obj_property name="ElementShortName">rfwd_src[2:0]</obj_property>
+         <obj_property name="ObjectShortName">rfwd_src[2:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/tb_rv32i/dut/U_RV32I/o_funct3" type="array">
          <obj_property name="ElementShortName">o_funct3[2:0]</obj_property>
@@ -77,6 +77,14 @@
       <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_CONTROL_UNIT/branch" type="logic">
          <obj_property name="ElementShortName">branch</obj_property>
          <obj_property name="ObjectShortName">branch</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_CONTROL_UNIT/jal" type="logic">
+         <obj_property name="ElementShortName">jal</obj_property>
+         <obj_property name="ObjectShortName">jal</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_CONTROL_UNIT/jalr" type="logic">
+         <obj_property name="ElementShortName">jalr</obj_property>
+         <obj_property name="ObjectShortName">jalr</obj_property>
       </wvobject>
       <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_CONTROL_UNIT/dwe" type="logic">
          <obj_property name="ElementShortName">dwe</obj_property>
@@ -95,9 +103,9 @@
          <obj_property name="ElementShortName">alu_src</obj_property>
          <obj_property name="ObjectShortName">alu_src</obj_property>
       </wvobject>
-      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/rfwd_src" type="logic">
-         <obj_property name="ElementShortName">rfwd_src</obj_property>
-         <obj_property name="ObjectShortName">rfwd_src</obj_property>
+      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/rfwd_src" type="array">
+         <obj_property name="ElementShortName">rfwd_src[2:0]</obj_property>
+         <obj_property name="ObjectShortName">rfwd_src[2:0]</obj_property>
       </wvobject>
       <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/alu_control" type="array">
          <obj_property name="ElementShortName">alu_control[3:0]</obj_property>
@@ -110,6 +118,22 @@
       <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/drdata" type="array">
          <obj_property name="ElementShortName">drdata[31:0]</obj_property>
          <obj_property name="ObjectShortName">drdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/branch" type="logic">
+         <obj_property name="ElementShortName">branch</obj_property>
+         <obj_property name="ObjectShortName">branch</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/b_taken" type="logic">
+         <obj_property name="ElementShortName">b_taken</obj_property>
+         <obj_property name="ObjectShortName">b_taken</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/jal" type="logic">
+         <obj_property name="ElementShortName">jal</obj_property>
+         <obj_property name="ObjectShortName">jal</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/jalr" type="logic">
+         <obj_property name="ElementShortName">jalr</obj_property>
+         <obj_property name="ObjectShortName">jalr</obj_property>
       </wvobject>
       <wvobject fp_name="/tb_rv32i/dut/U_RV32I/U_DATAPATH/instr_addr" type="array">
          <obj_property name="ElementShortName">instr_addr[31:0]</obj_property>
@@ -261,6 +285,7 @@
    <wvobject fp_name="group10" type="group">
       <obj_property name="label">data mem</obj_property>
       <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
       <wvobject fp_name="/tb_rv32i/dut/U_DATA_MEM/dwe" type="logic">
          <obj_property name="ElementShortName">dwe</obj_property>
          <obj_property name="ObjectShortName">dwe</obj_property>
