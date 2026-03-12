@@ -6,6 +6,10 @@
 `define I_TYPE 7'b001_0011
 `define IL_TYPE 7'b000_0011
 `define B_TYPE 7'b110_0011
+`define LUI_TYPE 7'b011_0111
+`define AUIPC_TYPE 7'b001_0111
+`define JAL_TYPE 7'b110_1111
+`define JALR_TYPE 7'b110_0111
 
 // R-type instruction
 `define ADD 4'b0_000   // ADD RD = RS1 + RS2
@@ -27,3 +31,17 @@
 `define BLTU 4'b0_110
 `define BGEU 4'b0_111
 
+//S-type instruction
+`define SB 3'b000
+`define SH 3'b001
+`define SW 3'b010
+
+//IL-type instruction
+`define LB 3'b000
+`define LH 3'b001
+`define LW 3'b010
+`define LBU 3'b100
+`define LHU 3'b101
+
+//J-type instruction
+`define JALR 3'b000

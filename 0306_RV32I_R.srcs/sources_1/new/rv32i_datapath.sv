@@ -6,28 +6,43 @@ module rv32i_datapath (
     input         rst,
     input         rf_we,
     input         alu_src,
-    input         rfwd_src,
+    input  [ 2:0] rfwd_src,
     input  [ 3:0] alu_control,
     input  [31:0] instr_data,
     input  [31:0] drdata,
     input         branch,
+    input         jal,
+    input         jalr,
     output [31:0] instr_addr,
     output [31:0] daddr,
     output [31:0] dwdata
 );
 
-    logic [31:0] rd1, rd2, alu_result, imm_data, alurs2_data, rfwb_data;
+    logic [31:0]
+        rd1,
+        rd2,
+        alu_result,
+        imm_data,
+        alurs2_data,
+        rfwb_data,
+        pc_alu_imm,
+        pc_alu_4;
     logic b_taken;
-    
+
     assign daddr  = alu_result;
     assign dwdata = rd2;
 
     program_counter U_PC (
         .clk(clk),
         .rst(rst),
+        .rd1(rd1),
         .imm_data(imm_data),
-        .b_taken(b_taken), //from alu comparator
-        .branch(branch), //froma control unit for B-type
+        .b_taken(b_taken),  //from alu comparator
+        .branch(branch),  //froma control unit for B-type
+        .jal(jal),
+        .jalr(jalr),
+        .pc_alu_imm(pc_alu_imm),
+        .pc_alu_4(pc_alu_4),
         .program_counter(instr_addr)
     );
 
@@ -64,9 +79,12 @@ module rv32i_datapath (
     );
 
     //to register file
-    mux_2x1 U_WB_MUX (
+    mux_5x1 U_WB_MUX (
         .in0    (alu_result),  //sel 0
         .in1    (drdata),      //sel 1
+        .in2    (imm_data),
+        .in3    (pc_alu_imm),
+        .in4    (pc_alu_4),
         .mux_sel(rfwd_src),
         .out_mux(rfwb_data)
     );
@@ -82,6 +100,39 @@ module mux_2x1 (
 );
 
     assign out_mux = (mux_sel) ? in1 : in0;
+
+endmodule
+
+module mux_5x1 (
+    input        [31:0] in0,      //sel 0
+    input        [31:0] in1,      //sel 1
+    input        [31:0] in2,
+    input        [31:0] in3,
+    input        [31:0] in4,
+    input        [ 2:0] mux_sel,
+    output logic [31:0] out_mux
+);
+
+    always_comb begin
+        out_mux = 0;
+        case (mux_sel)
+            3'd0: begin
+                out_mux = in0;
+            end
+            3'd1: begin
+                out_mux = in1;
+            end
+            3'd2: begin
+                out_mux = in2;
+            end
+            3'd3: begin
+                out_mux = in3;
+            end
+            3'd4: begin
+                out_mux = in4;
+            end
+        endcase
+    end
 
 endmodule
 
@@ -105,11 +156,27 @@ module imm_extender (
                 imm_data = {
                     {19{instr_data[31]}},
                     instr_data[31],
-                    instr_data[7], // imm bit 11
-                    instr_data[30:25], // imm bit 10:5
-                    instr_data[11:8], //imm bit 4:1
+                    instr_data[7],  // imm bit 11
+                    instr_data[30:25],  // imm bit 10:5
+                    instr_data[11:8],  //imm bit 4:1
                     1'b0
                 };
+            end
+            `LUI_TYPE, `AUIPC_TYPE: begin
+                imm_data = {instr_data[31:12], 12'b0};
+            end
+            `JAL_TYPE: begin
+                imm_data = {
+                    {11{instr_data[31]}},
+                    instr_data[31],
+                    instr_data[19:12],
+                    instr_data[20],
+                    instr_data[30:21],
+                    1'b0
+                };
+            end
+            `JALR_TYPE: begin
+                imm_data = {{20{instr_data[31]}}, instr_data[31:20]};
             end
         endcase
     end
@@ -137,7 +204,7 @@ module register_file (
             register_file[i] = i;
         end
         register_file[12] = 32'h00000003;
-        register_file[13] = 32'h00000021; 
+        register_file[13] = 32'h00000021;
         //register_file[4] = 32'h00000004;
         register_file[15] = 32'h80000000;
         register_file[16] = 32'h00000001;
@@ -160,7 +227,7 @@ module register_file (
     assign RD2 = (RA2 != 0) ? register_file[RA2] : 0;
 
 endmodule
-
+ 
 module alu (
     input        [31:0] rd1,          //RS1
     input        [31:0] rd2,          //RS2
@@ -224,37 +291,52 @@ endmodule
 module program_counter (
     input         clk,
     input         rst,
+    input  [31:0] rd1,             //rs1
     input  [31:0] imm_data,
     input         b_taken,
     input         branch,
+    input         jal,
+    input         jalr,
+    output [31:0] pc_alu_imm,
+    output [31:0] pc_alu_4,
     output [31:0] program_counter
 );
 
-    logic [31:0] pc_alu_out, pc_alu_4, pc_alu_imm;
+    logic [31:0] pc_alu_out;
+    logic pc_next_sel;
+
+    assign pc_next_sel = jal | (b_taken & branch);
+
+    mux_2x1 U_PC_RS1_MUX (
+        .in0    (program_counter),  //sel 0
+        .in1    (rd1),              //sel 1
+        .mux_sel(jalr),
+        .out_mux(pc_rs1_mux_out)
+    );
 
     pc_alu U_PC_4 (
-        .a(32'd4),
-        .b(program_counter),
+        .a         (32'd4),
+        .b         (program_counter),
         .pc_alu_out(pc_alu_4)
     );
 
     pc_alu U_PC_IMM (
-        .a(imm_data),
-        .b(program_counter),
+        .a         (imm_data),
+        .b         (pc_rs1_mux_out),
         .pc_alu_out(pc_alu_imm)
     );
 
     mux_2x1 U_PC_NEXT_MUX (
         .in0    (pc_alu_4),     //sel 0
         .in1    (pc_alu_imm),   //sel 1
-        .mux_sel(b_taken & branch),
+        .mux_sel(pc_next_sel),
         .out_mux(pc_alu_out)
     );
 
     register U_PC_REG (
-        .clk(clk),
-        .rst(rst),
-        .data_in(pc_alu_out),
+        .clk     (clk),
+        .rst     (rst),
+        .data_in (pc_alu_out),
         .data_out(program_counter)
     );
 
