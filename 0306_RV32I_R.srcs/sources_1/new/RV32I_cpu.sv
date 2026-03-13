@@ -152,7 +152,7 @@ module control_unit (
                 alu_src     = 1'b0;
                 alu_control = 4'b0000;
                 rfwd_src    = 3'd4;
-                o_funct3    = funct3;
+                o_funct3    = 3'b000; //이것도 funct3 아니지 않나?
                 branch      = 1'b0;
                 jal         = 1'b1;
                 if(opcode == `JL_TYPE) jalr = 1'b1;

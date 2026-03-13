@@ -150,7 +150,7 @@ module imm_extender (
                     {20{instr_data[31]}}, instr_data[31:25], instr_data[11:7]
                 };
             end
-            `I_TYPE, `IL_TYPE: begin  //load 
+            `JL_TYPE, `I_TYPE, `IL_TYPE: begin  //load 
                 imm_data = {{20{instr_data[31]}}, instr_data[31:20]};
             end
             `B_TYPE: begin  //Branch
@@ -160,24 +160,21 @@ module imm_extender (
                     instr_data[7],  // imm bit 11
                     instr_data[30:25],  // imm bit 10:5
                     instr_data[11:8],  //imm bit 4:1
-                    1'b0
+                    1'b0 
                 };
             end
             `LUI_TYPE, `AUIPC_TYPE: begin
-                imm_data = {instr_data[31:12], 12'b0};
+                imm_data = {instr_data[31:12], {12{1'b0}}};
             end
             `J_TYPE: begin
                 imm_data = {
                     {11{instr_data[31]}},
-                    instr_data[31],
-                    instr_data[19:12],
-                    instr_data[20],
-                    instr_data[30:21],
+                    instr_data[31], // 20 : 12bit extend
+                    instr_data[19:12], // 19:12 : 8bit
+                    instr_data[20], // 11 : 1bit
+                    instr_data[30:21], //10:1 : 10bit 
                     1'b0
                 };
-            end
-            `JL_TYPE: begin
-                imm_data = {{20{instr_data[31]}}, instr_data[31:20]};
             end
         endcase
     end
@@ -303,7 +300,7 @@ module program_counter (
     output [31:0] program_counter
 );
 
-    logic [31:0] pc_alu_out, pc_rs1_mux_out;
+    logic [31:0] pc_next_out, pc_rs1_mux_out;
     logic pc_next_sel;
 
     assign pc_next_sel = jal | (b_taken & branch);
@@ -332,13 +329,13 @@ module program_counter (
         .in0    (pc_alu_4),     //sel 0
         .in1    (pc_alu_imm),   //sel 1
         .mux_sel(pc_next_sel),
-        .out_mux(pc_alu_out)
+        .out_mux(pc_next_out)
     );
 
     register U_PC_REG (
         .clk     (clk),
         .rst     (rst),
-        .data_in (pc_alu_out),
+        .data_in (pc_next_out),
         .data_out(program_counter)
     );
 

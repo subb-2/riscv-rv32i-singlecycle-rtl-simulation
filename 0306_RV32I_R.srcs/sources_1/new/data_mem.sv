@@ -10,7 +10,8 @@ module data_mem (
     output logic [31:0] drdata
 );
 
-    logic [31:0] dmem[0:1023]; //1000word 선언  
+    logic [7:0] dmem[0:401]; //1000word 선언  
+    //logic [31:0] dmem[255]
 
     always_ff @(posedge clk) begin
 

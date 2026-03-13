@@ -6,7 +6,7 @@ module instruction_mem (
     output [31:0] instr_data
 );
 
-    logic [31:0] rom [0:31];
+    logic [31:0] rom [0:127];
 
     initial begin
         $readmemh("riscv_ru32i_rom_data.mem",rom); 
