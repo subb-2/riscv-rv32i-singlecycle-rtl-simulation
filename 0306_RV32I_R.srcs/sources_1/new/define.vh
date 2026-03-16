@@ -1,4 +1,4 @@
-//`define SIMULATION 1 
+`define SIMULATION 1 
 
 //op code
 `define R_TYPE 7'b011_0011

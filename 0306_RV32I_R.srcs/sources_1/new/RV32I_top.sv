@@ -2,7 +2,8 @@
 
 module RV32I_top (
     input clk,
-    input rst
+    input rst,
+    output [4:0] led
 );
     logic       dwe;
     logic [2:0] o_funct3;
@@ -17,8 +18,9 @@ module RV32I_top (
 
     data_mem U_DATA_MEM (
         .*,
-        .i_funct3(o_funct3)
+        .i_funct3(o_funct3) 
     );
 
+assign led = instr_addr[4:0];
 
 endmodule
