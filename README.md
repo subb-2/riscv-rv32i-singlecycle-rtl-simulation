@@ -127,14 +127,14 @@ else               PC_Next ← pc_alu_4     // 일반 순차 실행 (PC + 4)
 
 ### Instruction Memory (ROM)
 
-`instr_addr[31:2]`로 word 단위 접근합니다 (byte 주소 → `/4` 변환).  
-초기화 방식은 두 가지를 지원합니다.
+`instr_addr[31:2]`로 word 단위 접근합니다. (byte 주소 → `/4` 변환)
+ROM에 실행할 명령어 데이터를 대입하는 것은 두 가지 방식을 사용했습니다.
 
 ```systemverilog
-// 방법 1 — .mem 파일로 읽기
+// 방법 1 — .mem 파일 활용
 $readmemh("riscv_ru32i_rom_data.mem", rom);
 
-// 방법 2 — initial 블록 직접 설정
+// 방법 2 — 직접 설정
 rom[0] = 32'hffc18213;  // ADDI x4, x3, -4
 rom[1] = 32'hffe62293;  // SLTI x5, x12, -2
 ```
