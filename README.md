@@ -115,11 +115,13 @@ Opcode를 해석하여, 제어 신호를 생성하고 데이터패스(Datapath) 
 ### PC 업데이트 로직
 
 ```
-pc_next_sel = jal | (b_taken & branch)
+// 분기 조건 판별: JAL 이거나, Branch 조건이 충족(b_taken)되었을 때 1
+assign pc_next_sel = jal | (b_taken & branch);
 
-if (pc_next_sel == 0):  PC ← PC + 4
-else if (jalr == 1):    PC ← rs1 + imm   // JALR
-else:                   PC ← PC + imm    // JAL / Branch taken
+// 최종 PC 갱신 MUX 로직
+if (pc_next_sel)   PC_Next ← pc_alu_imm   // 점프/분기 수행 (Base + imm)
+else               PC_Next ← pc_alu_4     // 일반 순차 실행 (PC + 4)
+
 ```
 
 ### Instruction Memory (ROM)
