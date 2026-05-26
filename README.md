@@ -172,7 +172,7 @@ byte-addressable 구조로, `i_funct3`에 따라 접근 크기를 제어합니�
 - **S-Type & Load** — SB/SH/SW 저장 후 LB/LH/LW/LBU/LHU 로드, 부호 확장 검증
 - **B-Type** — BEQ/BNE/BLT/BGE/BLTU/BGEU 분기 조건 및 PC 점프 주소 확인
 - **U-Type & J-Type** — LUI/AUIPC 상위 20비트 처리, JAL/JALR 점프 및 리턴 주소 저장
-- **C → ASM 실행** — `while` 루프 + 함수 호출 (`adder`) + 스택 프레임 생성/복구 + halt(`j .L4`) 전체 시나리오 동작 확인
+- **C → ASM 실행** — C언어 기반의 복합 시나리오(반복문, 서브루틴, 스택 제어)를 어셈블리어로 변환하여, CPU의 통합 동작 흐름 검증
 
 ---
 
