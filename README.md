@@ -16,14 +16,15 @@ C 코드를 RISC-V 어셈블리로 컴파일한 `.mem` 파일을 ROM에 로드�
 
 ## 🎯 지원 명령어
 
-| Format | Type | Description | Supported Instructions |
+| Format | Description | Supported Instructions | C언어 예시 |
 | :---: | :---: | :--- | :--- |
-| **R-Type** | Register-Register | 레지스터 간 산술/논리 연산 수행 | `ADD`, `SUB`, `SLL`, `SLT`, `SLTU`, `XOR`, `SRL`, `SRA`, `OR`, `AND` |
-| **I-Type** | Register-Immediate / Load | 상숫값과의 연산 및 메모리 데이터 로드 | `ADDI`, `SLTI`, `SLTIU`, `XORI`, `ORI`, `ANDI`, `SLLI`, `SRLI`, `SRAI`, `LB`, `LH`, `LW`, `LBU`, `LHU` |
-| **S-Type** | Store | 메모리에 데이터 저장 | `SB`, `SH`, `SW` |
-| **B-Type** | Branch | 조건에 따른 프로그램 카운터(PC) 분기 | `BEQ`, `BNE`, `BLT`, `BGE`, `BLTU`, `BGEU` |
-| **U-Type** | Upper Immediate | 상위 20비트 즉시값(Immediate) 처리 | `LUI`, `AUIPC` |
-| **J-Type** | Jump | 무조건 분기 및 복귀 주소 저장(Link) | `JAL`, `JALR` |
+| **R-Type** | 레지스터 간 산술/논리 연산 수행 | `ADD`, `SUB`, `SLL`, `SLT`, `SLTU`, `XOR`, `SRL`, `SRA`, `OR`, `AND` | `a = b + c;` (변수 간 기본 연산) |
+| **I-Type** | 상숫값과의 연산 및 메모리 데이터 로드 | `ADDI`, `SLTI`, `SLTIU`, `XORI`, `ORI`, `ANDI`, `SLLI`, `SRLI`, `SRAI` | `a = b + 5;` (상수값 연산) |
+| **IL-Type** | 상숫값과의 연산 및 메모리 데이터 로드 | `LB`, `LH`, `LW`, `LBU`, `LHU` | `arr[3] = a;` (포인터 / 배열에 값 대입) |
+| **S-Type** | 메모리에 데이터 저장 | `SB`, `SH`, `SW` | `int val = arr[2];` (포인터 / 배열에 값 읽어올 때) |
+| **B-Type** | 조건에 따른 프로그램 카운터(PC) 분기 | `BEQ`, `BNE`, `BLT`, `BGE`, `BLTU`, `BGEU` | `if (a == b)` (조건문 및 반복문 분기) |
+| **U-Type** | 상위 20비트 즉시값(Immediate) 처리 | `LUI`, `AUIPC` | `int num = 0x12345678;` (전역 변수 주소 / 대형 상수) |
+| **J-Type** | 무조건 분기 및 복귀 주소 저장(Link) | `JAL`, `JALR` | `func();`, `return;` (함수 호출 및 복귀) |
 
 ---
 
