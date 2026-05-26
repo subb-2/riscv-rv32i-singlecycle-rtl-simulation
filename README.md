@@ -63,14 +63,14 @@ opcode / funct3 / funct7\[5\]를 조합하여 Datapath 제어 신호를 생성�
 
 | 신호 | 역할 |
 |------|------|
-| `rf_we` | 레지스터 파일 쓰기 인에이블 |
+| `rf_we` | 레지스터 파일 쓰기 enable |
 | `alu_src` | ALU 두 번째 입력 선택 (rs2 / imm) |
 | `alu_control[3:0]` | ALU 연산 종류 (`{funct7[5], funct3}`) |
 | `rfwd_src[2:0]` | Write-back 소스 선택 (0~4) |
-| `branch` | B-type 분기 인에이블 |
-| `jal` | JAL / JALR 점프 인에이블 |
+| `branch` | B-type 분기 enable |
+| `jal` | JAL / JALR 점프 enable |
 | `jalr` | JALR 여부 (PC = rs1 + imm) |
-| `dwe` | 데이터 메모리 쓰기 인에이블 |
+| `dwe` | 데이터 메모리 쓰기 enable |
 | `o_funct3` | 메모리 접근 크기 전달 (SB/SH/SW/LB/LH/LW 구분) |
 
 **명령어 타입별 제어 신호 요약**
