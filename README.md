@@ -28,6 +28,7 @@ C 코드를 RISC-V 어셈블리로 컴파일한 `.mem` 파일을 ROM에 로드�
 ---
 
 ## 🏗️ 시스템 구조
+<img width="1001" height="797" alt="Image" src="https://github.com/user-attachments/assets/f3c16ab6-3756-4ac7-9cc7-0966c163fda0" />
 
 ```
                     ┌──────────────────────────────────────────┐
