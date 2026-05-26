@@ -59,7 +59,7 @@ CPU 내부(`RV32I_cpu`)는 명령어의 흐름을 제어하는 `Control Unit`과
 
 ### Control Unit
 
-opcode / funct3 / funct7\[5\]를 조합하여 Datapath 제어 신호를 생성하는 조합 논리 블록입니다.
+
 
 | 신호 | 역할 |
 |------|------|
@@ -171,19 +171,6 @@ byte-addressable 구조로, `i_funct3`에 따라 접근 크기를 제어합니�
 - **B-Type** — BEQ/BNE/BLT/BGE/BLTU/BGEU 분기 조건 및 PC 점프 주소 확인
 - **U-Type & J-Type** — LUI/AUIPC 상위 20비트 처리, JAL/JALR 점프 및 리턴 주소 저장
 - **C → ASM 실행** — `while` 루프 + 함수 호출 (`adder`) + 스택 프레임 생성/복구 + halt(`j .L4`) 전체 시나리오 동작 확인
-
----
-
-## ⚙️ 타이밍 결과 (Vivado Implementation)
-
-| 항목 | 값 |
-|------|----|
-| Worst Negative Slack (WNS) | 8.123 ns |
-| Total Negative Slack (TNS) | 0 ns |
-| Worst Hold Slack (WHS) | 0.263 ns |
-| Failing Endpoints | 0 |
-
-모든 사용자 지정 타이밍 제약 조건을 만족합니다.
 
 ---
 
