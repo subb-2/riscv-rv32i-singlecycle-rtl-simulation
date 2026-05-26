@@ -33,31 +33,11 @@ C 코드를 RISC-V 어셈블리로 컴파일한 `.mem` 파일을 ROM에 로드�
 
 ### 1. System Block Diagram
 명령어 메모리(ROM)와 데이터 메모리(RAM)를 분리한 하바드 아키텍처를 최상위(`RV32I_top`) 레벨에서 구현하였습니다.
-![System Block Diagram](이미지경로1)
+<img width="1823" height="447" alt="Image" src="https://github.com/user-attachments/assets/2d2afe77-4028-4400-bd35-bb8f8b120732" />
 
 ### 2. Detailed CPU Architecture
 CPU 내부(`RV32I_cpu`)는 명령어의 흐름을 제어하는 `Control Unit`과 실제 연산 및 데이터 이동을 담당하는 `Datapath`로 구성됩니다. 각 명령어 포맷에 따른 MUX 제어 및 제어 신호 흐름은 아래 회로도와 같이 설계되었습니다.
 <img width="1001" height="797" alt="Image" src="https://github.com/user-attachments/assets/f3c16ab6-3756-4ac7-9cc7-0966c163fda0" />
-
-```
-                    ┌──────────────────────────────────────────┐
-                    │               RV32I_top                  │
-  clk ─────────────►│                                          │
-  rst ─────────────►│  ┌──────────────┐     ┌───────────────┐ │
-                    │  │ instruction  │     │   data_mem    │ │
-                    │  │    _mem      │     │    (RAM)      │ │
-                    │  │   (ROM)      │     │ byte-addressable│
-                    │  └──────┬───────┘     └───────▲───────┘ │
-                    │   instr_data│               drdata│      │
-                    │             ▼                     │      │
-                    │  ┌──────────────────────────────────┐   │
-                    │  │            RV32I_cpu             │   │
-                    │  │  ┌──────────────┐ ┌──────────┐  │   │
-                    │  │  │ control_unit │ │ datapath │  │   │
-                    │  │  └──────────────┘ └──────────┘  │   │
-                    │  └──────────────────────────────────┘   │
-                    └──────────────────────────────────────────┘
-```
 
 ---
 
