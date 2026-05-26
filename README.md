@@ -65,7 +65,7 @@ CPU 내부(`RV32I_cpu`)는 명령어의 흐름을 제어하는 `Control Unit`과
 
 ```
 ├── define.vh                   # opcode · ALU 연산 매크로 정의
-├── RV32I_top.sv                # 최상위 모듈 — 세 모듈 연결 + LED 출력
+├── RV32I_top.sv                # 최상위 모듈 — 세 모듈 연결
 ├── RV32I_cpu.sv                # CPU 코어 (control_unit + datapath 인스턴스화)
 ├── rv32i_datapath.sv           # Datapath 전체 (레지스터파일, ALU, PC 등 포함)
 ├── instruction_mem.sv          # 명령어 ROM (32-bit word 단위, byte 주소 변환)
