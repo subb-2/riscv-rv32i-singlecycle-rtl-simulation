@@ -159,7 +159,6 @@ byte-addressable 구조로, `i_funct3`에 따라 접근 크기를 제어합니�
 |------|------|
 | HDL | SystemVerilog |
 | EDA Tool | Xilinx Vivado |
-| 타겟 보드 | Xilinx FPGA (Zynq 계열) |
 | 시뮬레이터 | Vivado Simulator (XSim) |
 | 아키텍처 | Harvard Architecture (단일 사이클) |
 
