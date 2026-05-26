@@ -50,7 +50,7 @@ CPU 내부(`RV32I_cpu`)는 명령어의 흐름을 제어하는 `Control Unit`과
 ├── rv32i_datapath.sv           # Datapath 전체 (레지스터파일, ALU, PC 등 포함)
 ├── instruction_mem.sv          # 명령어 ROM (32-bit word 단위, byte 주소 변환)
 ├── data_mem.sv                 # 데이터 RAM (byte-addressable, SB/SH/SW/LB/LH/LW 지원)
-└── riscv_ru32i_rom_data.mem    # 명령어 초기화 데이터 (hex, $readmemh 용)
+└── riscv_rv32i_rom_data.mem    # 명령어 초기화 데이터 (hex, $readmemh 용)
 ```
 
 ---
@@ -75,17 +75,17 @@ opcode / funct3 / funct7\[5\]를 조합하여 Datapath 제어 신호를 생성�
 
 **명령어 타입별 제어 신호 요약**
 
-| Type | rf_we | alu_src | rfwd_src | branch | jal | jalr | dwe |
-|------|-------|---------|----------|--------|-----|------|-----|
-| R    | 1 | 0 | 0 | 0 | 0 | 0 | 0 |
-| I    | 1 | 1 | 0 | 0 | 0 | 0 | 0 |
-| Load | 1 | 1 | 1 | 0 | 0 | 0 | 0 |
-| S    | 0 | 1 | — | 0 | 0 | 0 | 1 |
-| B    | 0 | 0 | — | 1 | 0 | 0 | 0 |
-| LUI  | 1 | 0 | 2 | 0 | 0 | 0 | 0 |
-| AUIPC| 1 | 0 | 3 | 0 | 0 | 0 | 0 |
-| JAL  | 1 | 0 | 4 | 0 | 1 | 0 | 0 |
-| JALR | 1 | 0 | 4 | 0 | 1 | 1 | 0 |
+| Type | rf_we | alu_src | alu_control | rfwd_src | o_funct3 | branch | jal | jalr | dwe |
+|------|-------|---------|----------|----------|----------|--------|-----|------|-----|
+| R    | 1 | 0 | {funct7[5], funct3} | 0 | 0 | 0 | 0 | 0 | 0 |
+| I    | 1 | 1 | {funct7[5], funct3} or {1'b0, funct3} | 0 | funct3 | 0 | 0 | 0 | 0 |
+| Load | 1 | 1 | 0 | 1 | funct3 | 0 | 0 | 0 | 0 |
+| S    | 0 | 1 | 0 | 0 | funct3 | 0 | 0 | 0 | 1 |
+| B    | 0 | 0 | {0, funct3} | 0 | 0 | 1 | 0 | 0 | 0 |
+| LUI  | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
+| AUIPC| 1 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
+| JAL  | 1 | 0 | 0 | 4 | 0 | 0 | 1 | 0 | 0 |
+| JALR | 1 | 0 | 0 | 4 | 0 | 0 | 1 | 1 | 0 |
 
 ### Datapath
 
