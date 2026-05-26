@@ -59,7 +59,7 @@ CPU 내부(`RV32I_cpu`)는 명령어의 흐름을 제어하는 `Control Unit`과
 
 ### Control Unit
 
-
+Opcode를 해석하여, 제어 신호를 생성하고 데이터패스(Datapath) 내 각 모듈의 동작을 지시합니다.
 
 | 신호 | 역할 |
 |------|------|
@@ -93,14 +93,14 @@ CPU 내부(`RV32I_cpu`)는 명령어의 흐름을 제어하는 `Control Unit`과
 
 | 모듈 | 역할 |
 |------|------|
-| `register_file` | 32개 범용 레지스터 (x0 = 0 하드와이어) |
+| `register_file` | 32개 범용 레지스터 (x0 = 0 Hardwired 처리하여 규격 준수) |
 | `imm_extender` | 명령어 타입별 부호 확장 (I / S / B / U / J) |
 | `alu` | 산술·논리 연산 + B-type 분기 비교 (`b_taken`) |
 | `program_counter` | PC 업데이트 (PC+4 / PC+imm / rs1+imm) |
 | `mux_2x1` | ALU 입력 소스 선택, PC 소스 선택 등 |
 | `mux_5x1` | Write-back 소스 5-to-1 선택 |
 | `pc_alu` | PC 전용 덧셈기 (PC+4, PC+imm 분리 계산) |
-| `register` | 32-bit D 플립플롭 (PC 레지스터) |
+| `register` | 32-bit D 플립플롭 (PC register) |
 
 **Write-back 소스 (`rfwd_src`)**
 
