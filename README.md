@@ -1,7 +1,8 @@
 # RISC-V RV32I CPU (Single-Cycle)
 
-> RISC-V 표준 문서 기반으로 설계한 RV32I 단일 사이클 CPU SystemVerilog 구현 프로젝트  
-> Harvard Architecture (명령어 메모리 / 데이터 메모리 분리) 채택
+> - **Architecture:** Harvard Architecture (Instruction / Data Memory 분리)
+> - **ISA:** RISC-V RV32I (공식 표준 문서 규격 준수)
+> - **Language:** SystemVerilog
 
 ---
 
@@ -17,13 +18,13 @@ C 코드를 RISC-V 어셈블리로 컴파일한 `.mem` 파일을 ROM에 로드�
 
 | 타입 | 명령어 |
 |------|--------|
-| **R-Type** | ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND |
-| **I-Type** | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI |
+| **R-Type** | Register-Register | 레지스터 간 산술/논리 연산 수행 | ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND |
+| **I-Type** | Register-Immediate / Load | 상숫값과의 연산 및 메모리 데이터 로드 | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI |
 | **Load / IL-Type** | LB, LH, LW, LBU, LHU |
-| **S-Type** | SB, SH, SW |
-| **B-Type** | BEQ, BNE, BLT, BGE, BLTU, BGEU |
-| **U-Type** | LUI, AUIPC |
-| **J-Type** | JAL, JALR |
+| **S-Type** | Store | 메모리에 데이터 저장 | SB, SH, SW |
+| **B-Type** | Branch | 조건에 따른 프로그램 카운터(PC) 분기 | BEQ, BNE, BLT, BGE, BLTU, BGEU |
+| **U-Type** | Upper Immediate | 상위 20비트 즉시값(Immediate) 처리 | LUI, AUIPC |
+| **J-Type** | Jump | 무조건 분기 및 복귀 주소 저장(Link) | JAL, JALR |
 
 ---
 
