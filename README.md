@@ -18,10 +18,10 @@ C 코드를 RISC-V 어셈블리로 컴파일한 `.mem` 파일을 ROM에 로드�
 
 명령어 메모리(ROM)와 데이터 메모리(RAM)를 분리한 Harvard Architecture로 구현하였습니다.  
 CPU 내부는 명령어 흐름을 제어하는 **Control Unit**과 실제 연산 및 데이터 이동을 담당하는 **Datapath**로 구성됩니다.
-
+<p align="center">
 <img width="800" alt="System Block Diagram" src="https://github.com/user-attachments/assets/2d2afe77-4028-4400-bd35-bb8f8b120732" />
-<img width="400" alt="CPU Architecture" src="https://github.com/user-attachments/assets/f3c16ab6-3756-4ac7-9cc7-0966c163fda0" />
-
+<img width="1000" alt="CPU Architecture" src="https://github.com/user-attachments/assets/f3c16ab6-3756-4ac7-9cc7-0966c163fda0" />
+</p>
 ---
 
 ## 🎯 지원 명령어
