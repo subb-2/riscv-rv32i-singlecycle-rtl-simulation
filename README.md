@@ -112,8 +112,3 @@ RV32I 공식 스펙을 기준으로 6가지 타입(R / I / S / B / U / J) 전체
 * **Hazard Detection Unit 추가** — 파이프라인 전환 시 Data Hazard / Control Hazard 처리 로직 설계
 
 ---
-
-## 📂 포트폴리오 목차
-
-* [📂 Source Code](#) : RTL 전체 소스 (Control Unit, Datapath 및 서브모듈)
-* [📂 Report](#) : 최종 설계 보고서
