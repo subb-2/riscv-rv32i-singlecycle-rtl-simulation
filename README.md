@@ -93,6 +93,14 @@ RV32I 공식 스펙을 기준으로 6가지 타입(R / I / S / B / U / J) 전체
 
 ---
 
+## 📌 향후 개선 방향
+
+* **파이프라인 구조 적용** — 단일 사이클 구조의 클럭 제약을 해소하고 처리량 향상
+* **데이터 메모리 크기 확장** — 현재 33바이트 제한으로 실운용 시 크기 조정 필요
+* **Hazard Detection Unit 추가** — 파이프라인 전환 시 Data Hazard / Control Hazard 처리 로직 설계
+
+---
+
 ## 🖥️ 개발 환경
 
 | 항목 | 내용 |
@@ -105,10 +113,13 @@ RV32I 공식 스펙을 기준으로 6가지 타입(R / I / S / B / U / J) 전체
 
 ---
 
-## 📌 향후 개선 방향
+## 📁 파일 구성
 
-* **파이프라인 구조 적용** — 단일 사이클 구조의 클럭 제약을 해소하고 처리량 향상
-* **데이터 메모리 크기 확장** — 현재 33바이트 제한으로 실운용 시 크기 조정 필요
-* **Hazard Detection Unit 추가** — 파이프라인 전환 시 Data Hazard / Control Hazard 처리 로직 설계
-
----
+```text
+├── define.vh                    # opcode, funct3, ALU 연산 매크로 정의
+├── RV32I_top.sv                 # 최상위 모듈 - 세 모듈 연결
+├── RV32I_cpu.sv                 # CPU 코어 (control_unit + datapath 인스턴스화)
+├── rv32i_datapath.sv            # Datapath 전체 (레지스터파일, ALU, PC 등 포함)
+├── instruction_mem.sv           # 명령어 ROM (32-bit word 단위, byte 주소 변환)
+├── data_mem.sv                  # 데이터 RAM (byte-addressable, SB/SH/SW/LB/LH/LW 지원)
+└── riscv_rv32i_rom_data.mem     # 명령어 초기화 데이터 (hex, $readmemh 용)
