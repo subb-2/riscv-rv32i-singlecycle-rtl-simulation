@@ -51,7 +51,7 @@ RV32I 공식 스펙을 기준으로 6가지 타입(R / I / S / B / U / J) 전체
 ## 🏗️ 시스템 구조
 
 <p align="center">
-  <img width="900" alt="CPU Block Diagram" src="https://github.com/user-attachments/assets/f3c16ab6-3756-4ac7-9cc7-0966c163fda0" />
+  <img width="700" alt="CPU Block Diagram" src="https://github.com/user-attachments/assets/f3c16ab6-3756-4ac7-9cc7-0966c163fda0" />
 </p>
 
 ---
