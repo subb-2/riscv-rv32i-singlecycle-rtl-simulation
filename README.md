@@ -36,15 +36,9 @@ RISC-V 공식 표준 문서(RV32I)를 기반으로 6가지 명령어 타입을 �
 
 ### 2. RV32I 전 명령어 타입 구현
 
-| Format | 구현 명령어 |
-|--------|------------|
-| R-Type | ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND |
-| I-Type | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI |
-| Load   | LB, LH, LW, LBU, LHU |
-| S-Type | SB, SH, SW |
-| B-Type | BEQ, BNE, BLT, BGE, BLTU, BGEU |
-| U-Type | LUI, AUIPC |
-| J-Type | JAL, JALR |
+RV32I 공식 스펙을 기준으로 6가지 타입(R / I / S / B / U / J) 전체를 구현하였으며,
+각 타입별 엣지 케이스(Shift Masking, Signed/Unsigned 경계값, 부호 확장)를
+시뮬레이션으로 검증하였습니다.
 
 ### 3. C → ASM 통합 실행 검증
 
