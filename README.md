@@ -2,7 +2,7 @@
 
 📅 프로젝트 정보
 
-* 진행 기간: 2026.03 (3학년 2학기)
+* 진행 기간: 2026.03.05 ~ 2026.03.16
 * 설계 대상: RV32I Single-Cycle CPU (R / I / S / B / U / J 전 타입 지원)
 * 기술 스택: `SystemVerilog`, `Vivado XSim`, `Harvard Architecture (ROM/RAM 분리)`
 
