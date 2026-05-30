@@ -8,51 +8,33 @@
 
 ## 📌 프로젝트 개요
 
-RISC-V는 RV32I ISA의 6가지 명령어 타입(R / I / S / B / U / J)을 모두 지원하는 **단일 사이클 CPU**입니다.  
+RV32I ISA의 6가지 명령어 타입(R / I / S / B / U / J)을 모두 지원하는 **단일 사이클 CPU**입니다.  
 Control Unit과 Datapath를 모듈로 분리하여 설계하였으며, Vivado 시뮬레이션을 통해 각 명령어 타입별 동작을 검증하였습니다.  
-C 코드를 RISC-V 어셈블리로 컴파일한 `.mem` 파일을 ROM에 로드하여 실제 프로그램 실행까지 확인합니다.
-
----
-
-## 🎯 지원 명령어
-
-| Format | Description | Supported Instructions | C언어 예시 |
-| :---: | :---: | :--- | :--- |
-| **R-Type** | 레지스터 간 산술/논리 연산 수행 | `ADD`, `SUB`, `SLL`, `SLT`, `SLTU`, `XOR`, `SRL`, `SRA`, `OR`, `AND` | `a = b + c;` (변수 간 기본 연산) |
-| **I-Type** | 상숫값과의 연산 및 메모리 데이터 로드 | `ADDI`, `SLTI`, `SLTIU`, `XORI`, `ORI`, `ANDI`, `SLLI`, `SRLI`, `SRAI` | `a = b + 5;` (상수값 연산) |
-| **IL-Type** | 상숫값과의 연산 및 메모리 데이터 로드 | `LB`, `LH`, `LW`, `LBU`, `LHU` | `arr[3] = a;` (포인터 / 배열에 값 대입) |
-| **S-Type** | 메모리에 데이터 저장 | `SB`, `SH`, `SW` | `int val = arr[2];` (포인터 / 배열에 값 읽어올 때) |
-| **B-Type** | 조건에 따른 프로그램 카운터(PC) 분기 | `BEQ`, `BNE`, `BLT`, `BGE`, `BLTU`, `BGEU` | `if (a == b)` (조건문 및 반복문 분기) |
-| **U-Type** | 상위 20비트 즉시값(Immediate) 처리 | `LUI`, `AUIPC` | `int num = 0x12345678;` (전역 변수 주소 / 대형 상수) |
-| **J-Type** | 무조건 분기 및 복귀 주소 저장(Link) | `JAL`, `JALR` | `func();`, `return;` (함수 호출 및 복귀) |
+C 코드를 RISC-V 어셈블리로 컴파일한 `.mem` 파일을 ROM에 로드하여 실제 프로그램 실행까지 확인하였습니다.
 
 ---
 
 ## 🏗️ 시스템 구조
 
-본 프로젝트는 Top-down 설계 방식을 적용하여 시스템을 모듈화하였습니다.
+명령어 메모리(ROM)와 데이터 메모리(RAM)를 분리한 Harvard Architecture로 구현하였습니다.  
+CPU 내부는 명령어 흐름을 제어하는 **Control Unit**과 실제 연산 및 데이터 이동을 담당하는 **Datapath**로 구성됩니다.
 
-### 1. System Block Diagram
-명령어 메모리(ROM)와 데이터 메모리(RAM)를 분리한 하바드 아키텍처를 최상위(`RV32I_top`) 레벨에서 구현하였습니다.
-<img width="1823" height="447" alt="Image" src="https://github.com/user-attachments/assets/2d2afe77-4028-4400-bd35-bb8f8b120732" />
-
-### 2. Detailed CPU Architecture
-CPU 내부(`RV32I_cpu`)는 명령어의 흐름을 제어하는 `Control Unit`과 실제 연산 및 데이터 이동을 담당하는 `Datapath`로 구성됩니다. 각 명령어 포맷에 따른 MUX 제어 및 제어 신호 흐름은 아래 회로도와 같이 설계되었습니다.
-<img width="1001" height="797" alt="Image" src="https://github.com/user-attachments/assets/f3c16ab6-3756-4ac7-9cc7-0966c163fda0" />
+<img width="1823" height="447" alt="System Block Diagram" src="https://github.com/user-attachments/assets/2d2afe77-4028-4400-bd35-bb8f8b120732" />
+<img width="1001" height="797" alt="CPU Architecture" src="https://github.com/user-attachments/assets/f3c16ab6-3756-4ac7-9cc7-0966c163fda0" />
 
 ---
 
-## 📁 파일 구성
+## 🎯 지원 명령어
 
-```
-├── define.vh                   # opcode · ALU 연산 매크로 정의
-├── RV32I_top.sv                # 최상위 모듈 — 세 모듈 연결
-├── RV32I_cpu.sv                # CPU 코어 (control_unit + datapath 인스턴스화)
-├── rv32i_datapath.sv           # Datapath 전체 (레지스터파일, ALU, PC 등 포함)
-├── instruction_mem.sv          # 명령어 ROM (32-bit word 단위, byte 주소 변환)
-├── data_mem.sv                 # 데이터 RAM (byte-addressable, SB/SH/SW/LB/LH/LW 지원)
-└── riscv_rv32i_rom_data.mem    # 명령어 초기화 데이터 (hex, $readmemh 용)
-```
+| Format | Supported Instructions |
+|--------|----------------------|
+| R-Type | ADD, SUB, SLL, SLT, SLTU, XOR, SRL, SRA, OR, AND |
+| I-Type | ADDI, SLTI, SLTIU, XORI, ORI, ANDI, SLLI, SRLI, SRAI |
+| Load   | LB, LH, LW, LBU, LHU |
+| S-Type | SB, SH, SW |
+| B-Type | BEQ, BNE, BLT, BGE, BLTU, BGEU |
+| U-Type | LUI, AUIPC |
+| J-Type | JAL, JALR |
 
 ---
 
@@ -60,145 +42,57 @@ CPU 내부(`RV32I_cpu`)는 명령어의 흐름을 제어하는 `Control Unit`과
 
 ### Control Unit
 
-Opcode를 해석하여, 제어 신호를 생성하고 데이터패스(Datapath) 내 각 모듈의 동작을 지시합니다.
+Opcode를 해석하여 제어 신호를 생성하고 Datapath 내 각 모듈의 동작을 지시합니다.
 
 | 신호 | 역할 |
 |------|------|
 | `rf_we` | 레지스터 파일 쓰기 enable |
 | `alu_src` | ALU 두 번째 입력 선택 (rs2 / imm) |
-| `alu_control[3:0]` | ALU 연산 종류 (`{funct7[5], funct3}`) |
-| `rfwd_src[2:0]` | Write-back 소스 선택 (0~4) |
-| `branch` | B-type 분기 enable |
-| `jal` | JAL / JALR 점프 enable |
-| `jalr` | JALR 여부 (PC = rs1 + imm) |
+| `alu_control[3:0]` | ALU 연산 종류 |
+| `rfwd_src[2:0]` | Write-back 소스 선택 (ALU / MEM / IMM / PC+IMM / PC+4) |
+| `branch` / `jal` / `jalr` | 분기 및 점프 제어 |
 | `dwe` | 데이터 메모리 쓰기 enable |
 | `o_funct3` | 메모리 접근 크기 전달 (SB/SH/SW/LB/LH/LW 구분) |
 
-**명령어 타입별 제어 신호 요약**
-
-| Type | rf_we | alu_src | alu_control | rfwd_src | o_funct3 | branch | jal | jalr | dwe |
-|:------:|:-------:|:---------:|:----------:|:----------:|:----------:|:--------:|:-----:|:------:|:-----:|
-| R    | 1 | 0 | {funct7[5], funct3} | 0 | 0 | 0 | 0 | 0 | 0 |
-| I    | 1 | 1 | {funct7[5], funct3} or {1'b0, funct3} | 0 | funct3 | 0 | 0 | 0 | 0 |
-| Load | 1 | 1 | 0 | 1 | funct3 | 0 | 0 | 0 | 0 |
-| S    | 0 | 1 | 0 | 0 | funct3 | 0 | 0 | 0 | 1 |
-| B    | 0 | 0 | {0, funct3} | 0 | 0 | 1 | 0 | 0 | 0 |
-| LUI  | 1 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 |
-| AUIPC| 1 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 |
-| JAL  | 1 | 0 | 0 | 4 | 0 | 0 | 1 | 0 | 0 |
-| JALR | 1 | 0 | 0 | 4 | 0 | 0 | 1 | 1 | 0 |
-
-### Datapath
-
-내부 서브모듈 구성은 다음과 같습니다.
+### Datapath 주요 서브모듈
 
 | 모듈 | 역할 |
 |------|------|
-| `register_file` | 32개 범용 레지스터 (x0 = 0 Hardwired 처리하여 규격 준수) |
+| `register_file` | 32개 범용 레지스터 (x0 = 0 Hardwired) |
 | `imm_extender` | 명령어 타입별 부호 확장 (I / S / B / U / J) |
 | `alu` | 산술·논리 연산 + B-type 분기 비교 (`b_taken`) |
 | `program_counter` | PC 업데이트 (PC+4 / PC+imm / rs1+imm) |
-| `mux_2x1` | ALU 입력 소스 선택, PC 소스 선택 등 |
 | `mux_5x1` | Write-back 소스 5-to-1 선택 |
-| `pc_alu` | PC 전용 덧셈기 (PC+4, PC+imm 분리 계산) |
-| `register` | 32-bit D 플립플롭 (PC register) |
-
-**Write-back 소스 (`rfwd_src`)**
-
-| 값 | 소스 | 사용 명령어 |
-|----|------|------------|
-| 0 | ALU 결과 | R-type, I-type |
-| 1 | 데이터 메모리 | Load (LB/LH/LW 등) |
-| 2 | Immediate | LUI |
-| 3 | PC + Immediate | AUIPC |
-| 4 | PC + 4 | JAL, JALR (리턴 주소) |
-
-### PC 업데이트 로직
-
-```
-// 분기 조건 판별: JAL 이거나, Branch 조건이 충족(b_taken)되었을 때 1
-assign pc_next_sel = jal | (b_taken & branch);
-
-// 최종 PC 갱신 MUX 로직
-if (pc_next_sel)   PC_Next ← pc_alu_imm   // 점프/분기 수행 (Base + imm)
-else               PC_Next ← pc_alu_4     // 일반 순차 실행 (PC + 4)
-
-```
-
-### Instruction Memory (ROM)
-
-`instr_addr[31:2]`로 word 단위 접근합니다. (byte 주소 → `/4` 변환)
-ROM에 실행할 명령어 데이터를 대입하는 것은 두 가지 방식을 사용했습니다.
-
-```systemverilog
-// 방법 1 — .mem 파일 활용
-$readmemh("riscv_ru32i_rom_data.mem", rom);
-
-// 방법 2 — 직접 설정
-rom[0] = 32'hffc18213;  // ADDI x4, x3, -4
-rom[1] = 32'hffe62293;  // SLTI x5, x12, -2
-```
-
-### Data Memory (RAM)
-
-byte-addressable 구조로, `i_funct3`에 따라 접근 크기를 제어합니다.
-
-| funct3 | Store | Load |
-|--------|-------|------|
-| 3'b000 | SB (1 byte) | LB (부호 확장) |
-| 3'b001 | SH (2 bytes) | LH (부호 확장) |
-| 3'b010 | SW (4 bytes) | LW |
-| 3'b100 | — | LBU (0 확장) |
-| 3'b101 | — | LHU (0 확장) |
 
 ---
 
-## 🖥️ 개발 환경
+## ✅ 시뮬레이션 검증
 
-| 항목 | 내용 |
-|------|------|
-| HDL | SystemVerilog |
-| EDA Tool | Xilinx Vivado |
-| 시뮬레이터 | Vivado Simulator (XSim) |
-| 아키텍처 | Harvard Architecture (단일 사이클) |
-
----
-
-## ✅ 시뮬레이션 검증 항목
-
-- **R-Type** — ADD/SUB/SLL/SLT/SLTU/XOR/SRL/SRA/OR/AND 전 연산 결과 확인
-- **R-Type 엣지 케이스** — SLL shift amount 5-bit masking (rs2=33 → 실제 1bit shift), SLT signed vs SLTU unsigned 비교, SRL/SRA 부호 처리
-- **I-Type** — ADDI/SLTI/SLTIU/XORI/ORI/ANDI/SLLI/SRLI/SRAI 결과 확인
-- **S-Type & Load** — SB/SH/SW 저장 후 LB/LH/LW/LBU/LHU 로드, 부호 확장 검증
-- **B-Type** — BEQ/BNE/BLT/BGE/BLTU/BGEU 분기 조건 및 PC 점프 주소 확인
+- **R-Type** — 전 연산 결과 및 엣지 케이스 (shift masking, signed/unsigned 비교, SRL/SRA 부호 처리)
+- **I-Type** — 즉치 연산 전 항목
+- **S-Type & Load** — SB/SH/SW 저장 후 LB/LH/LW/LBU/LHU 부호 확장 검증
+- **B-Type** — 분기 조건 및 PC 점프 주소 확인
 - **U-Type & J-Type** — LUI/AUIPC 상위 20비트 처리, JAL/JALR 점프 및 리턴 주소 저장
-- **C → ASM 실행** — C언어 기반의 복합 시나리오(반복문, 서브루틴, 스택 제어)를 어셈블리어로 변환하여, CPU의 통합 동작 흐름 검증
+- **C → ASM 통합 실행** — 반복문, 서브루틴, 스택 제어를 포함한 복합 시나리오 검증
 
 ---
 
 ## 🐛 Trouble Shooting
 
 ### 1. `pc_rs1_mux_out` X 상태 문제
-
-**문제**: `program_counter` 내부 `pc_rs1_mux_out` 신호가 시뮬레이션에서 X(부정)로 유지되어 PC 값이 전달되지 않는 현상.
-
-**원인**: 버스 폭([31:0]) 선언 누락으로 인해 해당 신호가 1비트(Implicit Net)로 처리됨. 이로 인해 32비트 포트 매핑 시 상위 31비트가 공중에 붕 뜨는 Floating 상태가 되어 X 상태가 발생함.
-
-**해결**: 신호 비트 폭을 `[31:0]`으로 명시적 재선언하고, 연결 포트 방향을 재확인하여 해결.
+**문제**: 시뮬레이션에서 PC 값이 X 상태로 유지되어 전달되지 않는 현상.  
+**원인**: 버스 폭 `[31:0]` 선언 누락으로 신호가 1비트(Implicit Net)로 처리되어 상위 31비트가 Floating 상태.  
+**해결**: 신호 비트 폭을 명시적으로 재선언하고 포트 방향 재확인.
 
 ### 2. ROM 명령어 포맷 오해석
-
-**문제**: IL-Type(Load) 명령어에서 `imm[11:0]_rs1_funct3_rd_opcode` 필드 배치를 잘못 계산하여 생성한 ROM 값이 의도한 명령어와 불일치.
-
-**원인**: 발표 자료 기준 LH/LW 명령어의 `funct3` 필드와 `rd` 필드 위치를 혼동.
-
-**해결**: RISC-V 표준 스펙 문서를 재참조하여 각 필드 비트 범위를 재계산 후 ROM 값 재생성, 이후 시뮬레이션으로 `drdata` 출력 검증.
+**문제**: IL-Type 명령어 필드 배치 오계산으로 ROM 값이 의도한 명령어와 불일치.  
+**원인**: `funct3`와 `rd` 필드 위치 혼동.  
+**해결**: RISC-V 표준 스펙 문서 재참조하여 필드 비트 범위 재계산 후 ROM 값 재생성.
 
 ---
 
-## 📄 향후 발전 방향 (Future Work) 또는 개선 과제
+## 📄 알려진 제한 사항 및 향후 개선 방향
 
-- `data_mem` 크기가 33 바이트로 선언되어 있어 실제 운용 시 크기 조정 필요
-- 파이프라인 미적용 (단일 사이클) — 클럭 주파수는 크리티컬 패스 지연에 의해 결정
-  - 모든 명령어를 무조건 1클럭 만에 끝내야 하므로, 컴퓨터의 최대 속도가 가장 오래 걸리는 명령어(가장 느린 경로)의 처리 속도에 맞춤
-  - 파이프라인으로 개선하면 공장의 컨베이어 벨트처럼 여러 명령어를 단계별로 겹쳐서 동시에 작업하기 때문에, 똑같은 시간 안에 훨씬 더 많은 명령어를 처리(속도 향상)할 수 있음 
+- 단일 사이클 구조상 클럭 주파수가 크리티컬 패스(가장 느린 명령어)에 의해 결정됨
+- 파이프라인 적용 시 동일 시간 내 처리량 향상 가능
+- `data_mem` 크기가 33바이트로 선언되어 있어 실운용 시 크기 조정 필요
